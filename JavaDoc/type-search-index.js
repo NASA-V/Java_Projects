@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes","url":"allclasses-index.html"},{"p":"<Unnamed>","l":"Chart_Title"},{"p":"<Unnamed>","l":"Regression_Analysis"},{"p":"<Unnamed>","l":"RegressionDemo1"},{"p":"<Unnamed>","l":"Scatterplot"},{"p":"com.Relational_Database","l":"ScatterPlotExample"}]
