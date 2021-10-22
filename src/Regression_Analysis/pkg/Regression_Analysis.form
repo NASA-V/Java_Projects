@@ -2,7 +2,7 @@
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="Regression_Analysis.pkg.Regression_Analysis">
   <grid id="cbd77" binding="contentPane" layout-manager="BorderLayout" hgap="0" vgap="0">
     <constraints>
-      <xy x="34" y="54" width="310" height="583"/>
+      <xy x="34" y="54" width="310" height="587"/>
     </constraints>
     <properties>
       <background color="-1"/>
@@ -124,8 +124,14 @@
                   <background color="-1"/>
                   <enabled value="true"/>
                   <font name="Segoe UI" size="12" style="0"/>
+                  <hideActionText value="false"/>
+                  <horizontalTextPosition value="2"/>
                   <text value="@Enter"/>
                 </properties>
+                <clientProperties>
+                  <hideActionText class="java.lang.Boolean" value="false"/>
+                  <html.disable class="java.lang.Boolean" value="false"/>
+                </clientProperties>
               </component>
               <component id="a24d3" class="javax.swing.JFormattedTextField" binding="tfYaxis" custom-create="true">
                 <constraints>
