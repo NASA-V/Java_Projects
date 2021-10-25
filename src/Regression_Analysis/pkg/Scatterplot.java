@@ -25,7 +25,7 @@ public class Scatterplot extends JDialog {
      *
      * @param frame creates frame from regression analysis class.
      * @param modal specifies modal of the dialog
-     * @param title title of the dialog
+     *
      * @param info  info 0: title info 1: xaxis label info 2: yaxislabel info 3: series name
      */
 
@@ -34,7 +34,7 @@ public class Scatterplot extends JDialog {
     public Scatterplot(Regression_Analysis frame, boolean modal, String regression_analysis, String[] info) {
         super(frame, regression_analysis, modal);
         frame.setVisible(false);
-        setResizable(false);
+        setResizable(true);
         XYDataset dataset = createDataset(frame, info);
         setDefaultLookAndFeelDecorated(true);
 

@@ -1,17 +1,24 @@
 package Regression_Analysis.pkg;
 
+import org.sqlite.JDBC;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.sql.*;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Vector;
 
 public class Regression_Analysis extends JFrame {
+    public final String Connection_String = "jdbc:sqlite:Database.db";
+    private Connection conn;
 
     public static Regression_Analysis Regression_Analysis;
     private JPanel contentPane;
@@ -21,24 +28,39 @@ public class Regression_Analysis extends JFrame {
     private JFormattedTextField tfXaxis;
     private JFormattedTextField tfYaxis;
     private JButton btnAdd_Entry;
-    public JComboBox<String> cmbDataset;
+
+
+    private JComboBox<String> cmbDatasetList;
+    private JComboBox<String> cmbSeriesList;
+
     private JButton btnAddSeries;
+    private JPanel pBluBox;
     private DefaultTableModel model;
     private String Combo_Option;
-    public static Vector<Vector<Object>> list;
-    public Object[][] table;
+    //    public static Vector<Vector<Object>> list;
+//    public Object[][] table;
     public Vector<String> Datasetlist;
+    public ArrayList<String> List_Series_Name;
+
+    private int counter;
+    private String[] Series_arr;
+    private String Series_N;
 
 
     public Regression_Analysis() {
         super("Regression Analysis");
+        this.conn = null;
 
+        SQLDatabaseCreateConnection();
         setContentPane(contentPane);
-        setResizable(false);
+        setResizable(true);
         tblDataset.getTableHeader().setReorderingAllowed(false);
         createtable();
+//        [318, 595]
+
 //        contentPane.setPreferredSize(new Dimension(500, 500));
         getRootPane().setDefaultButton(btnAdd_Entry);
+        btnAdd_Entry.setEnabled(false);
 
         ImageIcon icon = new ImageIcon(Objects.requireNonNull(getClass().getResource("Resources/Image/007-boar.png")));
         setIconImage(icon.getImage());
@@ -49,30 +71,92 @@ public class Regression_Analysis extends JFrame {
         contentPane.registerKeyboardAction(e -> onCancel(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         btnAdd_Entry.addActionListener(e -> onAdd_Entry());
 
-        cmbDataset.addActionListener(new ActionListener() {
+        cmbDatasetList.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JComboBox cmbDataset_x = (JComboBox) e.getSource();
                 Combo_Option = (String) cmbDataset_x.getSelectedItem();
 
-//                JOptionPane.showMessageDialog(Regression_Analysis,"What is this "+option);
+//                JOptionPane.showMessageDialog(Regression_Analysis,"Whathis "+option);
             }
         });
 
-        list = new Vector<>();
-        list.add(new Vector<Object>());
 
-// Adding 3 to R0 created above x(R0, C0)
-//        where column and row starts at 0
-//        x.get(row).add(column, element to insert);
-//        new ArrayList<>(Arrays.asList(array));
-
-
+        btnAddSeries.addActionListener(new ActionListener() {
+            /**
+             * Invoked when an action occurs.
+             *
+             * @param e the event to be processed
+             */
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int x = JOptionPane.showConfirmDialog(Regression_Analysis, "Create Series?", "Series", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+                if (x == 0) {
+                    ++counter;
+                    String Series_Name = JOptionPane.showInputDialog(Regression_Analysis, "Enter Series", "Series Name", JOptionPane.QUESTION_MESSAGE);
+                    cmbSeriesList.addItem(Series_Name);
+                    model.setRowCount(0);
+                    btnAdd_Entry.setEnabled(true);
+                }
+            }
+        });
     }
 
     public void OnAddtable() {
 
 
+    }
+
+    public void SQLDatabaseCreateConnection() {
+
+        try {
+            DriverManager.registerDriver(new JDBC());
+            conn = DriverManager.getConnection(Connection_String);
+            Statement statement = conn.createStatement();
+//            JOptionPane.showMessageDialog(null, "CONNECTION HAS BEEN ESTABLISHED");
+//            statement.execute("Create table   All_Series(   _id INT default 1,  _X  DOUBLE,   _Y  DOUBLE) ");
+//            statement.execute("Create table   Datalist ( Dataset_Name text not null, 'Group Name' INTEGER primary key autoincrement)");
+//            statement.execute("Create table  Series_Information ( _id   INTEGER default 1   primary key autoincrement, Column1_Name INTEGER, Column2_Name INTEGER, Series_Name  text,'Group Name' INTEGER)");
+
+            DatabaseMetaData dmd = conn.getMetaData();
+            System.out.println(dmd.getDatabaseProductName());
+            System.out.println(dmd.getDatabaseProductVersion());
+            System.out.println(dmd.getDriverName());
+            System.out.println(dmd.getDriverVersion());
+
+            ResultSet resultSet = dmd.getTables(null, null, null, new String[]{"TABLE"});
+            while (resultSet.next()) {
+                String tableName = resultSet.getString("TABLE_NAME");
+                String remarks = resultSet.getString("REMARKS");
+
+                System.out.println(tableName);
+                System.out.println(remarks);
+            }
+
+
+//            statement.execute("INSERT INTO main.All_Series values ()")
+//            String query = "insert into (X) values(?)";
+
+//            PreparedStatement statement1 = conn.prepareStatement(query);
+
+//            statement1.setString(1, x);
+//            statement1.execute();
+            statement.close();
+            conn.close();
+
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(Regression_Analysis, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        } finally {
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(null, e.getMessage());
+            }
+        }
     }
 
 
@@ -146,41 +230,69 @@ public class Regression_Analysis extends JFrame {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        }*/
+        seems like everything is normal}*/
         Chart_Title chart_title = new Chart_Title(Regression_Analysis);
         chart_title.pack();
         chart_title.setLocationRelativeTo(Regression_Analysis);
         chart_title.setVisible(true);
     }
 
-    public void CreateComboBox() {
-
-
-    }
-
     private void onCancel() {
         int choice = JOptionPane.showConfirmDialog(Regression_Analysis, "Delete Table?", "Erase Table", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
         if (choice == 0) {
-            this.model.setRowCount(0);
+            model.setRowCount(0);
         }
 
     }
 
+    private Connection connect() {
+        Connection conn = null;
+        try {
+            DriverManager.registerDriver(new JDBC());
+            conn = DriverManager.getConnection(Connection_String);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return conn;
+    }
+
+
+    public void insert(double _X, double _Y) {
+        String sql = "INSERT INTO All_Series VALUES(?,?,?)";
+
+        try (Connection conn = this.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            String x,y;
+
+            pstmt.setDouble(1, counter);
+            pstmt.setDouble(2, _X);
+            pstmt.setDouble(3, _Y);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
     private void onAdd_Entry() {
+
         if (tfXaxis.getText().isEmpty() || tfYaxis.getText().isEmpty()) {
             JOptionPane.showMessageDialog(Regression_Analysis, "Enter number in fields", "Enter Data", JOptionPane.ERROR_MESSAGE);
         } else {
+            insert(Double.parseDouble(tfXaxis.getText()), Double.parseDouble(tfYaxis.getText()));
 
             Object[] row = new Object[]{Double.parseDouble(tfXaxis.getText()), Double.parseDouble(tfYaxis.getText())};
             model.addRow(row);
             tfXaxis.setText("0");
             tfYaxis.setText("0");
         }
+
+
     }
+
 
     public static void main(String[] args) {
         try {
-            UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+            UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
         } catch (ClassNotFoundException | UnsupportedLookAndFeelException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
@@ -188,19 +300,35 @@ public class Regression_Analysis extends JFrame {
         JDialog.setDefaultLookAndFeelDecorated(true);
         Regression_Analysis = new Regression_Analysis();
         Regression_Analysis.pack();
+        JOptionPane.showMessageDialog(Regression_Analysis,Regression_Analysis.getSize());
+
         Regression_Analysis.setLocationRelativeTo(null);
         Regression_Analysis.setDefaultCloseOperation(EXIT_ON_CLOSE);
         Regression_Analysis.setVisible(true);
     }
 
+
+
     public void createUIComponents() {
+//        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+
+        Box top = Box.createHorizontalBox();
+        Box bottom = Box.createHorizontalBox();
+        Box vert = Box.createVerticalBox();
+
+        contentPane = new JPanel();
+        pBluBox = new JPanel();
 
 
-        String[] petStrings = {"Bird", "Cat", "Dog", "Rabbit", "Pig"};
-//        Chart_Title Series_information = new Chart_Title();
 
-//        String[] obj = new String[]{};
-        Datasetlist = new Vector<>();
+
+
+        contentPane.setMinimumSize(new Dimension(318, 595));
+        contentPane.setPreferredSize(new Dimension(318, 595));
+        contentPane.setMaximumSize(new Dimension(318, 595));
+        cmbSeriesList = new JComboBox<>();
+        cmbDatasetList = new JComboBox<>();
+
 
         NumberFormat amountFormat = NumberFormat.getNumberInstance();
         amountFormat.setGroupingUsed(false);
@@ -208,24 +336,22 @@ public class Regression_Analysis extends JFrame {
         tfXaxis.setHorizontalAlignment(JTextField.CENTER);
         tfYaxis = new JFormattedTextField(amountFormat);
         tfYaxis.setHorizontalAlignment(JTextField.CENTER);
-        cmbDataset = new JComboBox<>(Datasetlist);
-
-
-
-//        cmbDataset.setModel(new DefaultComboBoxModel<String>());
-
-
-//        cmbDataset.setSelectedIndex(1);
-//        JOptionPane.showMessageDialog(Regression_Analysis,"what does this do"+ obj[cmbDataset.getSelectedIndex()]);
-
-
-//        cmbDataset = new JComboBox(Series_information.Chart_Information.toArray());
-//        cmbDataset.setSelectedIndex(4);
-
-
     }
 
+//        cmbDatasetList.setModel(new DefaultComboBoxModel<String>());
+
+
+//        cmbDatasetList.setSelectedIndex(1);
+//        JOptionPane.showMessageDialog(Regression_Analysis,"what does this do"+ obj[cmbDatasetList.getSelectedIndex()]);
+
+
+//        cmbDatasetList = new JComboBox(Series_information.Chart_Information.toArray());
+//        cmbDatasetList.setSelectedIndex(4);
+
+
 }
+
+
 
 
 

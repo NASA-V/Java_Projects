@@ -35,10 +35,6 @@ public class Chart_Title extends JDialog {
         contentPane.registerKeyboardAction(e -> onCancel(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
-    public Chart_Title() {
-
-    }
-
     public void onOK(Regression_Analysis frame) {
 
 
@@ -64,7 +60,7 @@ public class Chart_Title extends JDialog {
         String[] petStrings = {"Bird", "Cat", "Dog", "Rabbit", "Pig"};
 
 
-//        frame.cmbDataset.setModel(new DefaultComboBoxModel<String>(combo));
+//        frame.cmbDatasetList.setModel(new DefaultComboBoxModel<String>(combo));
 
 
         if (frame.tblDataset.getRowCount() == 0) {
